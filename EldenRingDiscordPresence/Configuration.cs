@@ -18,16 +18,38 @@ namespace EldenRingDiscordPresence
         public bool UseCloudLocationRegister { get; set; }
 
         public bool ShowAreaImages { get; set; }
-        public int UpdateDelay {  get; set; }
 
-        public Configuration(bool startWithWindows, int updateDelay,bool showElapsedTime, bool showAreaImages, bool showGraceLocationName, bool useCloudLocationRegister)
+        public bool ShowAreaName { get; set; }
+
+        public bool UseCustomClientID { get; set; }
+
+        public string Title { get; set; }
+
+        public string SubTitle { get; set; }
+
+        public string FallbackTitle { get; set; }
+
+        public string FallbackSubTitle { get; set; }
+
+        public string CustomClientID { get; set; }
+
+
+        public Configuration(bool startWithWindows, bool showElapsedTime, bool showAreaImages, bool showGraceLocationName, bool useCloudLocationRegister
+            , bool showAreaName, bool useCustomClientID, string title, string subtitle, string fallbackTitle, string fallbackSubTitle, string customClientID)
+       
         {
             this.StartWithWindows = startWithWindows;
             this.ShowElapsedTime = showElapsedTime;
             this.ShowAreaImages = showAreaImages;
             this.ShowGraceLocationName = showGraceLocationName;
-            this.UpdateDelay = updateDelay;
             this.UseCloudLocationRegister = useCloudLocationRegister;
+            this.ShowAreaName = showAreaName;
+            this.FallbackTitle = fallbackTitle;
+            this.FallbackSubTitle = fallbackSubTitle;
+            this.CustomClientID = customClientID;
+            this.Title = title;
+            this.SubTitle = subtitle;
+            this.UseCustomClientID = useCustomClientID;
         }
 
     }

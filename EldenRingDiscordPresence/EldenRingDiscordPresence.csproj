@@ -27,13 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\..\..\Downloads\ER_Icon_weapon_Golden_Order_Seal.png">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="DiscordRichPresence" Version="1.2.1.24" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="System.ServiceProcess.ServiceController" Version="8.0.0" />

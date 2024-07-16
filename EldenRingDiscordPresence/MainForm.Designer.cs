@@ -37,8 +37,6 @@ namespace EldenRingDiscordPresence
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             gameStatusTitleLabel = new Label();
             toggleStartOnStartup = new CheckBox();
-            delayComboBox = new ComboBox();
-            timeIntervalLabel = new Label();
             notifyIcon = new NotifyIcon(components);
             statusLabel = new Label();
             graceIdTitle = new Label();
@@ -48,6 +46,19 @@ namespace EldenRingDiscordPresence
             showImages = new CheckBox();
             showGraceName = new CheckBox();
             cloudLocationRegister = new CheckBox();
+            title = new TextBox();
+            subtitle = new TextBox();
+            showAreaNameCheckbox = new CheckBox();
+            label1 = new Label();
+            label2 = new Label();
+            customClientID = new TextBox();
+            customClientIDCheckbox = new CheckBox();
+            imageKey = new Label();
+            label4 = new Label();
+            label5 = new Label();
+            label6 = new Label();
+            fallbackSubtitle = new TextBox();
+            fallbackTitle = new TextBox();
             SuspendLayout();
             // 
             // gameStatusTitleLabel
@@ -63,33 +74,13 @@ namespace EldenRingDiscordPresence
             // toggleStartOnStartup
             // 
             toggleStartOnStartup.AutoSize = true;
-            toggleStartOnStartup.Location = new Point(5, 217);
+            toggleStartOnStartup.Location = new Point(12, 414);
             toggleStartOnStartup.Name = "toggleStartOnStartup";
             toggleStartOnStartup.Size = new Size(187, 19);
             toggleStartOnStartup.TabIndex = 3;
             toggleStartOnStartup.Text = "Start minimized with Windows";
             toggleStartOnStartup.UseVisualStyleBackColor = true;
             toggleStartOnStartup.CheckedChanged += toggleStartOnStartupCheckedChange;
-            // 
-            // delayComboBox
-            // 
-            delayComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-            delayComboBox.FormattingEnabled = true;
-            delayComboBox.Items.AddRange(new object[] { "10 Seconds", "30 Seconds", "60 Seconds" });
-            delayComboBox.Location = new Point(144, 174);
-            delayComboBox.Name = "delayComboBox";
-            delayComboBox.Size = new Size(124, 23);
-            delayComboBox.TabIndex = 4;
-            delayComboBox.SelectedIndexChanged += delayChanged;
-            // 
-            // timeIntervalLabel
-            // 
-            timeIntervalLabel.AutoSize = true;
-            timeIntervalLabel.Location = new Point(12, 176);
-            timeIntervalLabel.Name = "timeIntervalLabel";
-            timeIntervalLabel.Size = new Size(126, 15);
-            timeIntervalLabel.TabIndex = 5;
-            timeIntervalLabel.Text = "Update Presence every";
             // 
             // notifyIcon
             // 
@@ -112,7 +103,7 @@ namespace EldenRingDiscordPresence
             // graceIdTitle
             // 
             graceIdTitle.AutoSize = true;
-            graceIdTitle.Location = new Point(302, 206);
+            graceIdTitle.Location = new Point(299, 399);
             graceIdTitle.Name = "graceIdTitle";
             graceIdTitle.Size = new Size(97, 15);
             graceIdTitle.TabIndex = 7;
@@ -121,7 +112,7 @@ namespace EldenRingDiscordPresence
             // graceID
             // 
             graceID.AutoSize = true;
-            graceID.Location = new Point(302, 221);
+            graceID.Location = new Point(299, 414);
             graceID.Name = "graceID";
             graceID.Size = new Size(58, 15);
             graceID.TabIndex = 8;
@@ -153,27 +144,27 @@ namespace EldenRingDiscordPresence
             showImages.AutoSize = true;
             showImages.Location = new Point(12, 99);
             showImages.Name = "showImages";
-            showImages.Size = new Size(123, 19);
+            showImages.Size = new Size(118, 19);
             showImages.TabIndex = 11;
-            showImages.Text = "Show Area Images";
+            showImages.Text = "Show Area Image";
             showImages.UseVisualStyleBackColor = true;
             showImages.CheckedChanged += imageCheckChanged;
             // 
             // showGraceName
             // 
             showGraceName.AutoSize = true;
-            showGraceName.Location = new Point(12, 124);
+            showGraceName.Location = new Point(12, 149);
             showGraceName.Name = "showGraceName";
-            showGraceName.Size = new Size(172, 19);
+            showGraceName.Size = new Size(98, 19);
             showGraceName.TabIndex = 12;
-            showGraceName.Text = "Show Grace Location Name";
+            showGraceName.Text = "Show Subtitle";
             showGraceName.UseVisualStyleBackColor = true;
             showGraceName.CheckedChanged += graceLocationChecked;
             // 
             // cloudLocationRegister
             // 
             cloudLocationRegister.AutoSize = true;
-            cloudLocationRegister.Location = new Point(12, 149);
+            cloudLocationRegister.Location = new Point(12, 174);
             cloudLocationRegister.Name = "cloudLocationRegister";
             cloudLocationRegister.Size = new Size(176, 19);
             cloudLocationRegister.TabIndex = 13;
@@ -181,11 +172,144 @@ namespace EldenRingDiscordPresence
             cloudLocationRegister.UseVisualStyleBackColor = true;
             cloudLocationRegister.CheckedChanged += cloudChecked;
             // 
+            // title
+            // 
+            title.Location = new Point(116, 199);
+            title.Name = "title";
+            title.Size = new Size(190, 23);
+            title.TabIndex = 14;
+            title.Text = "Area -> %area_name%";
+            title.TextChanged += titleChanged;
+            // 
+            // subtitle
+            // 
+            subtitle.Location = new Point(116, 228);
+            subtitle.Name = "subtitle";
+            subtitle.Size = new Size(190, 23);
+            subtitle.TabIndex = 15;
+            subtitle.Text = "Grace -> %grace_name%";
+            subtitle.TextChanged += subTitleChanged;
+            // 
+            // showAreaNameCheckbox
+            // 
+            showAreaNameCheckbox.AutoSize = true;
+            showAreaNameCheckbox.Location = new Point(12, 124);
+            showAreaNameCheckbox.Name = "showAreaNameCheckbox";
+            showAreaNameCheckbox.Size = new Size(80, 19);
+            showAreaNameCheckbox.TabIndex = 16;
+            showAreaNameCheckbox.Text = "Show Title";
+            showAreaNameCheckbox.UseVisualStyleBackColor = true;
+            showAreaNameCheckbox.CheckedChanged += areaNameChecked;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(12, 202);
+            label1.Name = "label1";
+            label1.Size = new Size(32, 15);
+            label1.TabIndex = 17;
+            label1.Text = "Title:";
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new Point(12, 231);
+            label2.Name = "label2";
+            label2.Size = new Size(50, 15);
+            label2.TabIndex = 18;
+            label2.Text = "Subtitle:";
+            // 
+            // customClientID
+            // 
+            customClientID.Location = new Point(152, 391);
+            customClientID.Name = "customClientID";
+            customClientID.Size = new Size(131, 23);
+            customClientID.TabIndex = 19;
+            customClientID.Text = "1243218524554530998";
+            customClientID.TextChanged += customClientIDChanged;
+            // 
+            // customClientIDCheckbox
+            // 
+            customClientIDCheckbox.AutoSize = true;
+            customClientIDCheckbox.Location = new Point(12, 395);
+            customClientIDCheckbox.Name = "customClientIDCheckbox";
+            customClientIDCheckbox.Size = new Size(141, 19);
+            customClientIDCheckbox.TabIndex = 20;
+            customClientIDCheckbox.Text = "Use custom Client-ID";
+            customClientIDCheckbox.UseVisualStyleBackColor = true;
+            customClientIDCheckbox.CheckedChanged += customClientIDChecked;
+            // 
+            // imageKey
+            // 
+            imageKey.AutoSize = true;
+            imageKey.Location = new Point(299, 377);
+            imageKey.Name = "imageKey";
+            imageKey.Size = new Size(58, 15);
+            imageKey.TabIndex = 23;
+            imageKey.Text = "Unknown";
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new Point(299, 362);
+            label4.Name = "label4";
+            label4.Size = new Size(108, 15);
+            label4.TabIndex = 22;
+            label4.Text = "Current Image Key:";
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Location = new Point(12, 302);
+            label5.Name = "label5";
+            label5.Size = new Size(98, 15);
+            label5.TabIndex = 27;
+            label5.Text = "Fallback-Subtitle:";
+            // 
+            // label6
+            // 
+            label6.AutoSize = true;
+            label6.Location = new Point(12, 273);
+            label6.Name = "label6";
+            label6.Size = new Size(80, 15);
+            label6.TabIndex = 26;
+            label6.Text = "Fallback-Title:";
+            // 
+            // fallbackSubtitle
+            // 
+            fallbackSubtitle.Location = new Point(116, 299);
+            fallbackSubtitle.Name = "fallbackSubtitle";
+            fallbackSubtitle.Size = new Size(190, 23);
+            fallbackSubtitle.TabIndex = 25;
+            fallbackSubtitle.TextChanged += fallbackSubTitleChanged;
+            // 
+            // fallbackTitle
+            // 
+            fallbackTitle.Location = new Point(116, 270);
+            fallbackTitle.Name = "fallbackTitle";
+            fallbackTitle.Size = new Size(190, 23);
+            fallbackTitle.TabIndex = 24;
+            fallbackTitle.Text = "The Lands Between";
+            fallbackTitle.TextChanged += fallbackTitleChanged;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(411, 241);
+            ClientSize = new Size(411, 437);
+            Controls.Add(label5);
+            Controls.Add(label6);
+            Controls.Add(fallbackSubtitle);
+            Controls.Add(fallbackTitle);
+            Controls.Add(imageKey);
+            Controls.Add(label4);
+            Controls.Add(customClientIDCheckbox);
+            Controls.Add(customClientID);
+            Controls.Add(label2);
+            Controls.Add(label1);
+            Controls.Add(showAreaNameCheckbox);
+            Controls.Add(subtitle);
+            Controls.Add(title);
             Controls.Add(cloudLocationRegister);
             Controls.Add(showGraceName);
             Controls.Add(showImages);
@@ -194,8 +318,6 @@ namespace EldenRingDiscordPresence
             Controls.Add(graceID);
             Controls.Add(graceIdTitle);
             Controls.Add(statusLabel);
-            Controls.Add(timeIntervalLabel);
-            Controls.Add(delayComboBox);
             Controls.Add(toggleStartOnStartup);
             Controls.Add(gameStatusTitleLabel);
             FormBorderStyle = FormBorderStyle.FixedSingle;
@@ -207,6 +329,55 @@ namespace EldenRingDiscordPresence
             Resize += MainForm_Resize;
             ResumeLayout(false);
             PerformLayout();
+        }
+
+        private void fallbackSubTitleChanged(object sender, EventArgs e)
+        {
+            Program.ConfigurationManager.CurrentConfiguration.FallbackSubTitle = fallbackSubtitle.Text;
+            Program.ConfigurationManager.updateConfigurationFile();
+        }
+
+        private void fallbackTitleChanged(object sender, EventArgs e)
+        {
+            Program.ConfigurationManager.CurrentConfiguration.FallbackTitle = fallbackTitle.Text;
+            Program.ConfigurationManager.updateConfigurationFile();
+        }
+
+        private void subTitleChanged(object sender, EventArgs e)
+        {
+            Program.ConfigurationManager.CurrentConfiguration.SubTitle = subtitle.Text;
+            Program.ConfigurationManager.updateConfigurationFile();
+        }
+
+        private void titleChanged(object sender, EventArgs e)
+        {
+            Program.ConfigurationManager.CurrentConfiguration.Title = title.Text;
+            Program.ConfigurationManager.updateConfigurationFile();
+        }
+
+        private void customClientIDChanged(object sender, EventArgs e)
+        {
+            Program.ConfigurationManager.CurrentConfiguration.CustomClientID = customClientID.Text;
+            Program.ConfigurationManager.updateConfigurationFile();
+        }
+
+        private void customClientIDChecked(object sender, EventArgs e)
+        {
+            Program.ConfigurationManager.CurrentConfiguration.UseCustomClientID = customClientIDCheckbox.Checked;
+            Program.ConfigurationManager.updateConfigurationFile();
+
+        
+
+                Program.InitDiscord();
+
+
+        }
+
+
+        private void areaNameChecked(object sender, EventArgs e)
+        {
+            Program.ConfigurationManager.CurrentConfiguration.ShowAreaName = showAreaNameCheckbox.Checked;
+            Program.ConfigurationManager.updateConfigurationFile();
         }
 
         private void cloudChecked(object sender, EventArgs e)
@@ -235,8 +406,17 @@ namespace EldenRingDiscordPresence
 
         private void FromLoad(object sender, EventArgs e)
         {
-            delayComboBox.SelectedIndex = Program.ConfigurationManager.CurrentConfiguration.UpdateDelay;
-            toggleStartOnStartup.Checked = Program.ConfigurationManager.CurrentConfiguration.StartWithWindows;
+
+            showAreaNameCheckbox.Checked = Program.ConfigurationManager.CurrentConfiguration.ShowAreaName;
+
+            customClientIDCheckbox.Checked = Program.ConfigurationManager.CurrentConfiguration.UseCustomClientID;
+
+            title.Text = Program.ConfigurationManager.CurrentConfiguration.Title;
+            subtitle.Text = Program.ConfigurationManager.CurrentConfiguration.SubTitle;
+            fallbackTitle.Text = Program.ConfigurationManager.CurrentConfiguration.FallbackTitle;
+            fallbackSubtitle.Text = Program.ConfigurationManager.CurrentConfiguration.FallbackSubTitle;
+            customClientID.Text = Program.ConfigurationManager.CurrentConfiguration.CustomClientID;
+           toggleStartOnStartup.Checked = Program.ConfigurationManager.CurrentConfiguration.StartWithWindows;
             showImages.Checked = Program.ConfigurationManager.CurrentConfiguration.ShowAreaImages;
             showTimeElapsed.Checked = Program.ConfigurationManager.CurrentConfiguration.ShowElapsedTime;
             showGraceName.Checked = Program.ConfigurationManager.CurrentConfiguration.ShowGraceLocationName;
@@ -247,7 +427,6 @@ namespace EldenRingDiscordPresence
 
         private void delayChanged(object sender, EventArgs e)
         {
-            Program.ConfigurationManager.CurrentConfiguration.UpdateDelay = delayComboBox.SelectedIndex;
             Program.ConfigurationManager.updateConfigurationFile();
             Program.StopTimer();
             Program.StartTimer();
@@ -302,8 +481,6 @@ namespace EldenRingDiscordPresence
         #endregion
         private Label gameStatusTitleLabel;
         private CheckBox toggleStartOnStartup;
-        private ComboBox delayComboBox;
-        private Label timeIntervalLabel;
         private NotifyIcon notifyIcon;
         private Label statusLabel;
         private Label graceIdTitle;
@@ -313,5 +490,18 @@ namespace EldenRingDiscordPresence
         private CheckBox showImages;
         private CheckBox showGraceName;
         private CheckBox cloudLocationRegister;
+        private TextBox title;
+        private TextBox subtitle;
+        private CheckBox showAreaNameCheckbox;
+        private Label label1;
+        private Label label2;
+        private TextBox customClientID;
+        private CheckBox customClientIDCheckbox;
+        private Label imageKey;
+        private Label label4;
+        private Label label5;
+        private Label label6;
+        private TextBox fallbackSubtitle;
+        private TextBox fallbackTitle;
     }
 }

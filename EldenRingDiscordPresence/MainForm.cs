@@ -33,6 +33,17 @@ namespace EldenRingDiscordPresence
             });
         }
 
-  
+        public void SetImageKey(string key)
+        {
+            Invoke((Delegate)(() =>
+            {
+                if (key.Equals(""))
+                {
+                    imageKey.Text = "Unknown";
+                    return;
+                }
+                imageKey.Text = key;
+            }));
+        }
     }
 }

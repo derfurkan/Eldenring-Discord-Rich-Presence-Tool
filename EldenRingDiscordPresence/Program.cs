@@ -1,12 +1,8 @@
 using DiscordRPC;
 using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Configuration;
 using System.Diagnostics;
-using System.Net.Http.Headers;
 using System.ServiceProcess;
 using System.Timers;
-using System.Windows.Forms.VisualStyles;
 
 namespace EldenRingDiscordPresence
 {
@@ -14,49 +10,66 @@ namespace EldenRingDiscordPresence
     {
         public static readonly MemoryUtility MemoryUtility = new();
         public static Dictionary<long, string>? LocationRegister;
-        public static ConfigurationManager? ConfigurationManager;
+        public static ConfigurationManager ConfigurationManager = new ConfigurationManager();
         public static MainForm MainForm;
         private static System.Timers.Timer MainTimer;
-        private static DiscordRpcClient RpcClient;
-        private static Timestamps startGameTimestamp;
+        private static DiscordRpcClient? RpcClient;
+        private static Timestamps? startGameTimestamp;
         public static string CurrentGameExecutable;
-        
 
         [STAThread]
         static void Main()
         {
-
             ApplicationConfiguration.Initialize();
-            ConfigurationManager = new ConfigurationManager();
-          
 
-            if(ConfigurationManager.CurrentConfiguration.UseCloudLocationRegister)
-            {
-        
-                string webData = System.Text.Encoding.UTF8.GetString(new System.Net.WebClient().DownloadData("https://raw.githubusercontent.com/derfurkan/Eldenring-Discord-Rich-Presence-Tool/master/LocationRegister.json"));
-
-                LocationRegister = JsonConvert.DeserializeObject<Dictionary<long, string>>(webData);
-
-            } else
-            {
-                if (!File.Exists("LocationRegister.json"))
-                {
-                    MessageBox.Show("Could not find LocationRegister.json\nPlease make sure to put the LocationRegister.json file in the same directory as this executable.\n\nOr toggle 'Use Cloud Location-Register' and Re-Launch.", "Failed to load LocationRegister", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                } else
-                {
-                    LocationRegister = JsonConvert.DeserializeObject<Dictionary<long, string>>(File.ReadAllText("LocationRegister.json"));
-                }
-              
-            }
-
-            RpcClient = new DiscordRpcClient("1243218524554530998");
-
-            RpcClient.Initialize();
+            LoadLocationRegister();
+            InitDiscord();
             StartTimer();
 
             Application.Run(MainForm = new MainForm());
         }
 
+    
+        private static void LoadLocationRegister()
+        {
+            try
+            {
+                if (ConfigurationManager.CurrentConfiguration.UseCloudLocationRegister)
+                {
+                    string webData = new System.Net.WebClient().DownloadString("https://raw.githubusercontent.com/derfurkan/Eldenring-Discord-Rich-Presence-Tool/master/LocationRegister.json");
+                    LocationRegister = JsonConvert.DeserializeObject<Dictionary<long, string>>(webData);
+                }
+                else
+                {
+                    if (!File.Exists("LocationRegister.json"))
+                    {
+                        MessageBox.Show("Could not find LocationRegister.json\nPlease make sure to put the LocationRegister.json file in the same directory as this executable.\n\nOr toggle 'Use Cloud Location-Register' and Re-Launch.", "Failed to load LocationRegister", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    else
+                    {
+                        LocationRegister = JsonConvert.DeserializeObject<Dictionary<long, string>>(File.ReadAllText("LocationRegister.json"));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to load LocationRegister: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        public static void InitDiscord()
+        {
+            RpcClient?.ClearPresence();
+            RpcClient?.SetPresence(null);
+            RpcClient?.Dispose();
+            RpcClient = null;
+
+            string clientId = ConfigurationManager.CurrentConfiguration.UseCustomClientID ? ConfigurationManager.CurrentConfiguration.CustomClientID : "1243218524554530998";
+            RpcClient = new DiscordRpcClient(clientId);
+            RpcClient.Initialize();
+        }
+
+    
         public static void StartTimer()
         {
             if (ConfigurationManager == null)
@@ -64,33 +77,19 @@ namespace EldenRingDiscordPresence
 
             MainTimer = new System.Timers.Timer
             {
-                Interval = GetUpdateDelayInSeconds() * 1000,
+                Interval = 10 * 1000, // 10 seconds
                 AutoReset = true,
                 Enabled = true
             };
             MainTimer.Elapsed += OnTimerElapsed;
             MainTimer.Start();
         }
-
-        private static int GetUpdateDelayInSeconds() => ConfigurationManager.CurrentConfiguration.UpdateDelay switch
-        {
-            0 => 10,
-            1 => 30,
-            2 => 60,
-            _ => 30
-        };
-
         private static void OnTimerElapsed(object? sender, ElapsedEventArgs e)
         {
-           
             if (!IsGameLoaded())
             {
                 MainForm.SetStatus("WAITING FOR GAME...", Color.DarkOrange);
-                if (RpcClient.CurrentPresence != null)
-                {
-                    RpcClient.ClearPresence();
-                    RpcClient.SetPresence(null);
-                }
+                RpcClient?.ClearPresence();
                 MemoryUtility.CloseMemoryProcess();
                 startGameTimestamp = null;
                 return;
@@ -106,54 +105,77 @@ namespace EldenRingDiscordPresence
             if (startGameTimestamp == null)
                 startGameTimestamp = Timestamps.Now;
 
+            UpdateDiscordPresence();
+        }
 
-
+        private static void UpdateDiscordPresence()
+        {
             MemoryUtility.OpenMemoryProcess();
-            string location = "The Lands Between";
+
+            string title = ConfigurationManager.CurrentConfiguration.FallbackTitle;
+            string subtitle = ConfigurationManager.CurrentConfiguration.FallbackSubTitle;
+            string currentLocation = "";
             string imageKey = "none";
 
             long locationId = MemoryUtility.ReadLastGraceLocationId();
             MainForm.SetGraceID(locationId);
-            if (LocationRegister != null && LocationRegister.ContainsKey(locationId))
+
+            if (LocationRegister != null && LocationRegister.TryGetValue(locationId, out currentLocation))
             {
-                location = LocationRegister[locationId];
+                string[] locationParts = currentLocation.Split(" - ");
+                string areaName = locationParts[0];
+                string graceName = locationParts.Length > 1 ? locationParts[1] : "";
+
+                title = ConfigurationManager.CurrentConfiguration.Title
+                    .Replace("%area_name%", areaName)
+                    .Replace("%grace_name%", graceName);
+
+                subtitle = ConfigurationManager.CurrentConfiguration.SubTitle
+                    .Replace("%area_name%", areaName)
+                    .Replace("%grace_name%", graceName);
+
+                imageKey = areaName.Replace(" ", "").ToLower();
             }
 
-            imageKey = location.Contains(" - ") ? location.Split(" - ")[0].Replace(" ","").ToLower() : "none";
-            Debug.WriteLine(imageKey);
-            RichPresence rich = new RichPresence();
+            string playerName = MemoryUtility.ReadProfileName();
+            string playerLevel = MemoryUtility.ReadProfileLevel().ToString();
+            string playtimeHrs = MemoryUtility.ReadPlayTimeHrs().ToString();
+            string playtimeMin = MemoryUtility.ReadPlayTimeMin().ToString();
+            string playerDeaths = MemoryUtility.ReadDeathCount().ToString();
 
-            rich.WithDetails(location.Contains(" - ") ? location.Split(" - ")[0] : location);
+            title = title.Replace("%player_name%", playerName)
+                         .Replace("%player_level%", playerLevel)
+                         .Replace("%playtime_hrs%", playtimeHrs)
+                         .Replace("%playtime_min%", playtimeMin)
+                         .Replace("%player_deaths%", playerDeaths);
 
-            if (ConfigurationManager.CurrentConfiguration.ShowGraceLocationName)
+            subtitle = subtitle.Replace("%player_name%", playerName)
+                               .Replace("%player_level%", playerLevel)
+                               .Replace("%playtime_hrs%", playtimeHrs)
+                               .Replace("%playtime_min%", playtimeMin)
+                               .Replace("%player_deaths%", playerDeaths);
+
+            var richPresence = new RichPresence
             {
-               
-                rich.WithState(location.Contains(" - ") ? location.Split(" - ")[1] : "");
-            }
-
-
-            if (!ConfigurationManager.CurrentConfiguration.ShowAreaImages)
-            {
-                imageKey = "none";
-            }
-            rich.WithAssets(new Assets
+                Details = ConfigurationManager.CurrentConfiguration.ShowAreaName ? title : null,
+                State = ConfigurationManager.CurrentConfiguration.ShowGraceLocationName ? subtitle : null,
+                Assets = new Assets
                 {
-                    LargeImageKey = imageKey,
-                    LargeImageText = location.Contains(" - ") ? location.Split(" - ")[0] : location
-                });
-          
+                    LargeImageKey = ConfigurationManager.CurrentConfiguration.ShowAreaImages ? imageKey : "none",
+                    LargeImageText = title.Contains(" - ") ? title.Split(" - ")[0] : title
+                }
+            };
 
             if (ConfigurationManager.CurrentConfiguration.ShowElapsedTime)
             {
-                rich.WithTimestamps(startGameTimestamp);
+                richPresence.Timestamps = startGameTimestamp;
             }
-            
-            RpcClient.SetPresence(rich);
+
+            RpcClient?.SetPresence(richPresence);
             MainForm.SetStatus("RUNNING", Color.DarkGreen);
+            MainForm.SetImageKey(imageKey);
             MemoryUtility.CloseMemoryProcess();
         }
-
-
 
         public static void StopTimer()
         {
@@ -163,11 +185,11 @@ namespace EldenRingDiscordPresence
 
         private static bool IsGameLoaded()
         {
-            string[] procLists = new string[] { "start_protected_game", "eldenring" };
+            string[] procNames = { "start_protected_game", "eldenring" };
 
-            foreach (var item in procLists)
+            foreach (var procName in procNames)
             {
-                var procList = Process.GetProcessesByName(item);
+                var procList = Process.GetProcessesByName(procName);
 
                 if (procList.Any() && !procList[0].HasExited)
                 {
@@ -183,7 +205,7 @@ namespace EldenRingDiscordPresence
 
                     if (procList[0].Responding)
                     {
-                        CurrentGameExecutable = item;
+                        CurrentGameExecutable = procName;
                         return true;
                     }
                 }
@@ -202,5 +224,5 @@ namespace EldenRingDiscordPresence
                        sc.Status == ServiceControllerStatus.StartPending;
             });
         }
-}
+    }
 }
