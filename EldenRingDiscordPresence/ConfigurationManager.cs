@@ -21,7 +21,7 @@ namespace EldenRingDiscordPresence
             createFilesIfNotExisting();
             if (new FileInfo(configurationFilePath).Length == 0)
             {
-                CurrentConfiguration = new Configuration(false,true,true,true,true,true, false, "%area_name% - %grace_name%", "%player_name% | Level %player_level% | %player_deaths% Deaths", "The Lands Between" ,"", "1243218524554530998");
+                CurrentConfiguration = new Configuration(false,true,true,true,true,true, false, "%area_name% - %grace_name%", "%player_name% | Level %player_level% | %player_deaths% Deaths | %playtime_hrs% Hours / %playtime_min% Minutes played", "The Lands Between" ,"", "1243218524554530998");
                 File.WriteAllText(configurationFilePath, JsonConvert.SerializeObject(CurrentConfiguration));
             } else
             {

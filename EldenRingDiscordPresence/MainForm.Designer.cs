@@ -233,7 +233,7 @@ namespace EldenRingDiscordPresence
             customClientIDCheckbox.AutoSize = true;
             customClientIDCheckbox.Location = new Point(12, 395);
             customClientIDCheckbox.Name = "customClientIDCheckbox";
-            customClientIDCheckbox.Size = new Size(141, 19);
+            customClientIDCheckbox.Size = new Size(138, 19);
             customClientIDCheckbox.TabIndex = 20;
             customClientIDCheckbox.Text = "Use custom Client-ID";
             customClientIDCheckbox.UseVisualStyleBackColor = true;
@@ -296,7 +296,7 @@ namespace EldenRingDiscordPresence
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(411, 437);
+            ClientSize = new Size(409, 437);
             Controls.Add(label5);
             Controls.Add(label6);
             Controls.Add(fallbackSubtitle);
