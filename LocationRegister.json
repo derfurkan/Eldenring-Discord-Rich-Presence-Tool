@@ -306,7 +306,6 @@
   "1053522950": "Flame Peak - Fire Giant",
   "1054532950": "Flame Peak - Forge of the Giants",
   "1054552950": "Mountaintops of the Giants - First Church of Marika",
-  // - DLC -
   "2046402950": "Gravesite Plain - Gravesite Plain",
   "2047412950": "Gravesite Plain - Scorched Ruins",
   "2046422950": "Gravesite Plain - Three-Path Cross",
@@ -412,5 +411,5 @@
   "2050482951": "Scaduview - Scadutree Base",
   "2050482950": "Scaduview - Hinterland",
   "2051482951": "Scaduview - Hinterland Bridge",
-  "2051482950": "Scaduview - Fingerstone Hill",
+  "2051482950": "Scaduview - Fingerstone Hill"
 }
